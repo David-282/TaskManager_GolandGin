@@ -87,26 +87,6 @@ func DeleteTask(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
 }
 
-//func updateTask(c *gin.Context) {
-//	var input models.UpdateTaskInput
-//
-//	if err := c.ShouldBindJSON(&input); err != nil {
-//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//	mu.Lock()
-//	defer mu.Unlock()
-//
-//	updatedTask := models.UpdateTaskInput{
-//		Title:       input.Title,
-//		Description: input.Description,
-//		Status:      input.Status,
-//	}
-//	tasks = append(tasks, updatedTask)
-//
-//	c.JSON(http.StatusOK, gin.H{"data": updatedTask})
-//}
-
 func UpdateTask(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 64)
