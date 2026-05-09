@@ -1,6 +1,6 @@
 package models
 
-import "time"
+import "gorm.io/gorm"
 
 type Status string
 
@@ -11,11 +11,10 @@ const (
 )
 
 type Task struct {
-	ID          uint      `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      Status    `json:"status"`
-	CreatedAt   time.Time `json:"created_at"`
+	gorm.Model
+	Title       string `json:"title" gorm:"not null"`
+	Description string `json:"description"`
+	Status      Status `json:"status" gorm:"default: null"`
 }
 
 // dto
