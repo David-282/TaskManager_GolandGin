@@ -16,9 +16,8 @@ func SetupRoutes(r *gin.Engine) {
 			tasks.GET("get_task/:id", handlers.GetTask)
 			tasks.PUT("update_task/:id", handlers.UpdateTask)
 			tasks.DELETE("delete_task/:id", handlers.DeleteTask)
-			tasks.GET("get_by_status", handlers.FilterByStatus)
+			//tasks.GET("get_by_status", handlers.FilterByStatus)
 
-			//	GET /get_by_status?status=pending
 		}
 	}
 }

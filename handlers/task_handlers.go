@@ -32,7 +32,11 @@ func CreateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	task := models.Task{Title: input.Title, Description: input.Description}
+	task := models.Task{
+		Title:       input.Title,
+		Description: input.Description,
+		Status:      models.StatusPending,
+	}
 	if err := db.DB.Create(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -58,19 +62,47 @@ func DeleteTask(c *gin.Context) {
 	db.DB.Delete(&task)
 	c.JSON(http.StatusNoContent, nil)
 }
+
+//func UpdateTask(c *gin.Context) {
+//	var task models.Task
+//	if err := db.DB.First(&task, c.Param("id")).Error; err != nil {
+//		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+//		return
+//	}
+//
+//	var input models.UpdateTaskInput
+//	if err := c.ShouldBindJSON(&input); err != nil {
+//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//		return
+//	}
+//
+//	db.DB.Model(&task).Updates(input)
+//	c.JSON(http.StatusOK, gin.H{"data": task})
+//}
+
 func UpdateTask(c *gin.Context) {
+
+	var input models.UpdateTaskInput
 	var task models.Task
-	if err := db.DB.First(&task, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+
+	id := c.Param("id")
+
+	if err := db.DB.First(&task, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "task not found",
+		})
 		return
 	}
 
-	var input models.UpdateTaskInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	task.Title = input.Title
+	//task.Description = input.Description
+	//task.Status = input.Status
+	//
+	//db.DB.Save(&task)
 	db.DB.Model(&task).Updates(input)
 	c.JSON(http.StatusOK, gin.H{"data": task})
 }
