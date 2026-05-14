@@ -20,13 +20,15 @@ type Task struct {
 	Description string     `json:"description"`
 	Status      Status     `json:"status" gorm:"default: null"`
 	DueDate     *time.Time `json:"due_date" gorm:"not null"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UserID      uint       `json:"user_id" gorm:"not null"` // foreign key to Users
 }
 
 // dto
 type CreateTaskInput struct {
-	Title       string `json:"title"       binding:"required"`
-	Description string `json:"description"`
-	DueDate     string `json:"due_date" binding:"required"`
+	Title       string     `json:"title"       binding:"required"`
+	Description string     `json:"description"`
+	DueDate     *time.Time `json:"due_date" binding:"required"`
 }
 
 type UpdateTaskInput struct {

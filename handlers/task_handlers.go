@@ -32,11 +32,18 @@ func CreateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	user, _ := c.MustGet("currentUser").(models.Users)
 	task := models.Task{
-		Title:       input.Title,
-		Description: input.Description,
-		Status:      models.StatusPending,
-	}
+    Title:       input.Title,
+    Description: input.Description,
+    UserID:      user.ID,   // link task to user
+	Status:      models.StatusPending,
+	DueDate:     input.DueDate,
+}
+
+
+
 	if err := db.DB.Create(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

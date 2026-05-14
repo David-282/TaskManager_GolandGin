@@ -2,6 +2,7 @@ package db
 
 import (
 	"TaskManager/config"
+
 	"TaskManager/models"
 	"log"
 
@@ -17,9 +18,8 @@ func Connect(cfg config.Config) {
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
-
 	// AutoMigrate creates/updates the tasks table to match the struct
-	if err := DB.AutoMigrate(&models.Task{}); err != nil {
+	if err := DB.AutoMigrate(&models.Task{}, &models.Users{}); err != nil {
 		log.Fatal("Migration failed:", err)
 	}
 
