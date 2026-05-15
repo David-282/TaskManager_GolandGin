@@ -36,4 +36,5 @@ type UpdateTaskInput struct {
 	Description string     `json:"description"  binding:"required"`
 	Status      Status     `json:"status"   binding:"required"`
 	DueDate     *time.Time `json:"due_date" binding:"required"`
+	UserID      uint       `json:"user_id" binding:"required"`
 }

@@ -35,14 +35,12 @@ func CreateTask(c *gin.Context) {
 
 	user, _ := c.MustGet("currentUser").(models.Users)
 	task := models.Task{
-    Title:       input.Title,
-    Description: input.Description,
-    UserID:      user.ID,   // link task to user
-	Status:      models.StatusPending,
-	DueDate:     input.DueDate,
-}
-
-
+		Title:       input.Title,
+		Description: input.Description,
+		UserID:      user.ID, // link task to user
+		Status:      models.StatusPending,
+		DueDate:     input.DueDate,
+	}
 
 	if err := db.DB.Create(&task).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -54,50 +52,50 @@ func CreateTask(c *gin.Context) {
 
 func GetTask(c *gin.Context) {
 	var task models.Task
+
 	if err := db.DB.First(&task, c.Param("id")).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": task})
+
 }
+
 func DeleteTask(c *gin.Context) {
 	var task models.Task
-	if err := db.DB.First(&task, c.Param("id")).Error; err != nil {
+
+	user := c.MustGet("currentUser").(models.Users)
+	id := c.Param("id")
+
+	if err := db.DB.First(&task, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
 		return
 	}
+
+	if task.UserID != user.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not your task"})
+		return
+	}
+
 	db.DB.Delete(&task)
 	c.JSON(http.StatusNoContent, nil)
 }
 
-//func UpdateTask(c *gin.Context) {
-//	var task models.Task
-//	if err := db.DB.First(&task, c.Param("id")).Error; err != nil {
-//		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
-//		return
-//	}
-//
-//	var input models.UpdateTaskInput
-//	if err := c.ShouldBindJSON(&input); err != nil {
-//		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//		return
-//	}
-//
-//	db.DB.Model(&task).Updates(input)
-//	c.JSON(http.StatusOK, gin.H{"data": task})
-//}
-
 func UpdateTask(c *gin.Context) {
-
 	var input models.UpdateTaskInput
 	var task models.Task
 
 	id := c.Param("id")
 
+	user := c.MustGet("currentUser").(models.Users)
+
 	if err := db.DB.First(&task, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"error": "task not found",
-		})
+		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		return
+	}
+
+	if task.UserID != user.ID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "not your task"})
 		return
 	}
 
@@ -105,11 +103,13 @@ func UpdateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	task.Title = input.Title
-	//task.Description = input.Description
-	//task.Status = input.Status
-	//
-	//db.DB.Save(&task)
-	db.DB.Model(&task).Updates(input)
+	task.Description = input.Description
+	task.Status = input.Status
+	task.DueDate = input.DueDate
+
+	db.DB.Save(&task)
+
 	c.JSON(http.StatusOK, gin.H{"data": task})
 }
