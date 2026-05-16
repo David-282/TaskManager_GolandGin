@@ -1,3 +1,5 @@
+
+
 package handlers
 
 import (
@@ -23,7 +25,15 @@ func GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": tasks})
 
 }
-
+// CreateTask godoc
+// @Summary Create a task
+// @Description Create a new task
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param task body models.CreateTaskInput true "Task Data"
+// @Success 201 {object} models.Task
+// @Router /tasks/create_task [post]
 func CreateTask(c *gin.Context) {
 
 	var input models.CreateTaskInput
